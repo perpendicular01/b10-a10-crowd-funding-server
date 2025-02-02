@@ -35,8 +35,8 @@ async function run() {
     const campaignCollection = database.collection("campaigns")
     const donationCollection = database.collection("donations")
 
-
-    // campaigns
+    // ----------------------------------------------------------
+    // ----------------------campaigns---------------------------
 
     // get all campaigns
     app.get('/campaigns', async(req, res) => {
@@ -148,6 +148,48 @@ async function run() {
             })
         }
     })
+
+
+
+    // -----------------------------------------------------------------------------
+
+    // ------------------------.............Donations.............................
+    // INSERT A Donation
+    app.post("/donatedUsers", async(req, res)=> {
+        const donation = req.body
+        console.log("new donation : ", donation)
+
+        try{
+            const result = await donationCollection.insertOne(donation)
+            res.send(result)
+        }
+        catch{
+            res.status(500).send({
+                error: "adding donations falied"
+            })
+        }
+    })
+
+    // get Donation by EMAIL
+    app.get('/donatedUserDonations', async(req, res)=> {
+        const email = req.query;
+        console.log(email)
+        // json er user email er variable lage suppise userEmail
+        const query = {userEmail : email}
+
+        try{
+            const donations = donationCollection.find(query)
+            const result = await donations.toArray()
+            res.send(result)
+        }
+        catch{
+            res.status(500).send({
+                error: "fetch donations falied"
+            })
+
+        }
+    })
+    
 
 
   } finally {
