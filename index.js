@@ -1,6 +1,6 @@
 const express = require('express')
 const cors = require('cors')
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 
 const port = process.env.PORT || 5000;
@@ -29,14 +29,130 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    
+    const database = client.db("crowdFunding")
+    const campaignCollection = database.collection("campaigns")
+    const donationCollection = database.collection("donations")
+
+
+    // campaigns
+
+    // get all campaigns
+    app.get('/campaigns', async(req, res) => {
+        try{
+            const campaigns = campaignCollection.find()
+            const result = await campaigns.toArray()
+            res.send(result)
+        }
+        catch{
+            res.status(500).send({
+                error: "fetch campaigns falied"
+            })
+        }
+    })
+
+    // get campaign by id
+    app.get('/campaigns/:id', async(req, res)=> {
+        const id = req.params.id;
+        console.log(id)
+        const query = {id : new ObjectId(id)}
+
+        try{
+            const result = await campaignCollection.findOne(query)
+            res.send(result)
+        }
+        catch{
+            res.status(500).send({
+                error: "fetch campaigns falied"
+            })
+
+        }
+    })
+
+    // get campaign by EMAIL
+    app.get('/campaigns/:id', async(req, res)=> {
+        const email = req.params.email;
+        console.log(email)
+        // json er user email er variable lage suppise userEmail
+        const query = {userEmail : email}
+
+        try{
+            const campaigns = campaignCollection.find(query)
+            const result = await campaigns.toArray()
+            res.send(result)
+        }
+        catch{
+            res.status(500).send({
+                error: "fetch campaigns falied"
+            })
+
+        }
+    })
+
+    // INSERT A CAMPAIGN
+    app.post("/campaigns", async(req, res)=> {
+        const campaign = req.body
+        console.log("new campaign : ", campaign)
+
+        try{
+            const result = await campaignCollection.insertOne(campaign)
+            res.send(result)
+        }
+        catch{
+            res.status(500).send({
+                error: "adding campaign falied"
+            })
+        }
+    })
+
+    // UPDATE A CAMPAIGN
+    app.put("/campaigns/:id", async(req, res)=> {
+        const id = req.params.id;
+        const campaign = req.body
+        console.log(id, updatedCampaign)
+
+        const filter = {id : new ObjectId(id)}
+        const options = {upsert : true}
+        const updatedCampaign = {
+            $set: {
+                // component gula bosabo
+            }
+        }
+
+        try{
+            const result = await campaignCollection.updateOne(filter, updatedCampaign, options)
+            res.send(result)
+        }
+        catch{
+            res.status(500).send({
+                error: "update campaign falied"
+            })
+        }
+    })
+
+    // DELETE A CAMPAIGN
+    app.delete('/campaigns/:id', async(req, res) => {
+        const id = req.params.id;
+        console.log(id)
+
+        const query = {id : new ObjectId(id)}
+
+        try{
+            const result = await campaignCollection.deleteOne(query)
+            res.send(result)
+        }
+        catch{
+            res.status(500).send({
+                error: "delete campaign falied"
+            })
+        }
+    })
+
+
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
