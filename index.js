@@ -56,7 +56,7 @@ async function run() {
     app.get('/campaigns/:id', async(req, res)=> {
         const id = req.params.id;
         console.log(id)
-        const query = {id : new ObjectId(id)}
+        const query = {_id : new ObjectId(id)}
 
         try{
             const result = await campaignCollection.findOne(query)
@@ -71,9 +71,9 @@ async function run() {
     })
 
     // get campaign by EMAIL
-    app.get('/campaigns/:id', async(req, res)=> {
-        const email = req.params.email;
-        console.log(email)
+    app.get('/myCampaigns', async(req, res)=> {
+        const {email} = req.query;
+
         // json er user email er variable lage suppise userEmail
         const query = {userEmail : email}
 
@@ -132,11 +132,11 @@ async function run() {
     })
 
     // DELETE A CAMPAIGN
-    app.delete('/campaigns/:id', async(req, res) => {
+    app.delete('/deleteCampaigns/:id', async(req, res) => {
         const id = req.params.id;
         console.log(id)
 
-        const query = {id : new ObjectId(id)}
+        const query = {_id : new ObjectId(id)}
 
         try{
             const result = await campaignCollection.deleteOne(query)
@@ -155,7 +155,7 @@ async function run() {
 
     // ------------------------.............Donations.............................
     // INSERT A Donation
-    app.post("/donatedUsers", async(req, res)=> {
+    app.post("/usersDonations", async(req, res)=> {
         const donation = req.body
         console.log("new donation : ", donation)
 
@@ -171,11 +171,11 @@ async function run() {
     })
 
     // get Donation by EMAIL
-    app.get('/donatedUserDonations', async(req, res)=> {
-        const email = req.query;
+    app.get('/myDonations', async(req, res)=> {
+        const {email} = req.query;
         console.log(email)
         // json er user email er variable lage suppise userEmail
-        const query = {userEmail : email}
+        const query = {email : email}
 
         try{
             const donations = donationCollection.find(query)
@@ -187,6 +187,24 @@ async function run() {
                 error: "fetch donations falied"
             })
 
+        }
+    })
+
+    // delete donation by id
+    app.delete('/deleteDonation/:id', async(req, res) => {
+        const id = req.params.id;
+        console.log(id)
+
+        const query = {campaignId : id}
+
+        try{
+            const result = await donationCollection.deleteMany(query)
+            res.send(result)
+        }
+        catch{
+            res.status(500).send({
+                error: "delete campaign falied"
+            })
         }
     })
     
