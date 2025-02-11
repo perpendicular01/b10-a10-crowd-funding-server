@@ -106,19 +106,29 @@ async function run() {
         }
     })
 
+
     // UPDATE A CAMPAIGN
     app.put("/campaigns/:id", async(req, res)=> {
         const id = req.params.id;
         const campaign = req.body
-        console.log(id, updatedCampaign)
+        
 
-        const filter = {id : new ObjectId(id)}
+        const filter = {_id : new ObjectId(id)}
         const options = {upsert : true}
         const updatedCampaign = {
             $set: {
-                // component gula bosabo
+                 // component gula bosabo
+                
+                title: campaign.title,
+                type: campaign.type,
+                minAmount: campaign.minAmount,
+                deadline: campaign.deadline,
+                photo: campaign.photo,
+                description: campaign.description,
+               
             }
         }
+        console.log(id, updatedCampaign)
 
         try{
             const result = await campaignCollection.updateOne(filter, updatedCampaign, options)
@@ -204,6 +214,37 @@ async function run() {
         catch{
             res.status(500).send({
                 error: "delete campaign falied"
+            })
+        }
+    })
+
+    app.put("/updateDonation/:id", async(req, res)=> {
+        const id = req.params.id;
+        const campaign = req.body
+        
+
+        const filter = {campaignId : id}
+        const options = {upsert : true}
+        const updatedCampaign = {
+            $set: {
+                 // component gula bosabo
+                
+                title: campaign.title,
+                type: campaign.type,
+                photo: campaign.photo,
+                description: campaign.description,
+               
+            }
+        }
+        console.log(id, updatedCampaign)
+
+        try{
+            const result = await donationCollection.updateOne(filter, updatedCampaign, options)
+            res.send(result)
+        }
+        catch{
+            res.status(500).send({
+                error: "update campaign falied"
             })
         }
     })
