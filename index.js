@@ -44,6 +44,7 @@ async function run() {
             const campaigns = campaignCollection.find()
             const result = await campaigns.toArray()
             res.send(result)
+            // console.log(campaigns)
         }
         catch{
             res.status(500).send({
@@ -55,7 +56,7 @@ async function run() {
     // get campaign by id
     app.get('/campaigns/:id', async(req, res)=> {
         const id = req.params.id;
-        console.log(id)
+        // console.log(id)
         const query = {_id : new ObjectId(id)}
 
         try{
@@ -93,7 +94,7 @@ async function run() {
     // INSERT A CAMPAIGN
     app.post("/campaigns", async(req, res)=> {
         const campaign = req.body
-        console.log("new campaign : ", campaign)
+        // console.log("new campaign : ", campaign)
 
         try{
             const result = await campaignCollection.insertOne(campaign)
@@ -128,7 +129,7 @@ async function run() {
                
             }
         }
-        console.log(id, updatedCampaign)
+        // console.log(id, updatedCampaign)
 
         try{
             const result = await campaignCollection.updateOne(filter, updatedCampaign, options)
@@ -144,7 +145,7 @@ async function run() {
     // DELETE A CAMPAIGN
     app.delete('/deleteCampaigns/:id', async(req, res) => {
         const id = req.params.id;
-        console.log(id)
+        // console.log(id)
 
         const query = {_id : new ObjectId(id)}
 
@@ -167,7 +168,7 @@ async function run() {
     // INSERT A Donation
     app.post("/usersDonations", async(req, res)=> {
         const donation = req.body
-        console.log("new donation : ", donation)
+        // console.log("new donation : ", donation)
 
         try{
             const result = await donationCollection.insertOne(donation)
@@ -183,7 +184,7 @@ async function run() {
     // get Donation by EMAIL
     app.get('/myDonations', async(req, res)=> {
         const {email} = req.query;
-        console.log(email)
+        // console.log(email)
         // json er user email er variable lage suppise userEmail
         const query = {email : email}
 
@@ -203,7 +204,7 @@ async function run() {
     // delete donation by id
     app.delete('/deleteDonation/:id', async(req, res) => {
         const id = req.params.id;
-        console.log(id)
+        // console.log(id)
 
         const query = {campaignId : id}
 
@@ -236,7 +237,7 @@ async function run() {
                
             }
         }
-        console.log(id, updatedCampaign)
+        // console.log(id, updatedCampaign)
 
         try{
             const result = await donationCollection.updateOne(filter, updatedCampaign, options)
